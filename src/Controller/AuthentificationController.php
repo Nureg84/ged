@@ -32,18 +32,18 @@ class AuthentificationController extends AbstractController
 	}
 	
 	/**
-     * @Route("/insertUserBDD", name="insertUserBDD")
+     * @Route("/insertUserBdd", name="insertUserBDD")
      */
 	public function insertUserBdd(Request $request, EntityManagerInterface $manager): Response
 	{
 			$User = new Utilisateur();
-$			User->setNom($request->request->get('nom'));
-$			User->setPrenom($request->request->get('prenom'));
-$			User->setCode($request->request->get('code'));
-$			User->setSalt($request->request->get('salt'));
+			$User->setNom($request->request->get('nom'));
+			$User->setPrenom($request->request->get('prenom'));
+			$User->setCode($request->request->get('code'));
+			$User->setSalt($request->request->get('salt'));
 
-$			manager->persist($User);
-$			manager->flush();
+			$manager->persist($User);
+			$manager->flush();
 			
 		return $this->render('authentification/insertUser.html.twig', [
 			'controller_name' => "Ajout en base de données.",
