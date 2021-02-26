@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des utilisateurs{% endblock %}
+
+{% block body %}
+<h1>{{ controller_name }}</h1>
+<table class="table table-hover">
+<thead>
+<tr>
+<th scope="col">Nom</th>
+<th scope="col">Prénom</th>
+<th scope="col">N° de contrat</th>
+<th scope="col">Actions</th>
+</tr>
+</thead>
+<tbody>
+{% for item in listeUser %}
+<tr class="table">
+<th scope="row">{{ item.nom }}</th>
+<td>{{ item.prenom }}</td>
+<td>{{ item.id }}</td>
+<td>RAS</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}
