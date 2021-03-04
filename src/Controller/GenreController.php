@@ -60,7 +60,7 @@ return $this->render('genre/insertGenre.html.twig', [
     }
 
     /**
-     * @Route("/deleteGenre{id}", name="deleteGenre")
+     * @Route("/deleteGenre/{id}", name="deleteGenre")
      */
     public function deleteGenre(Request $request, EntityManagerInterface $manager, Genre $id): Response
      {
