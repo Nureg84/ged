@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des documents{% endblock %}
+
+{% block body %}
+<h1>{{ controller_name }}</h1>
+<table class="table table-hover">
+<thead>
+<tr>
+<th scope="col">Id</th>
+<th scope="col">Nom</th>
+<th scope="col">Genre</th>
+<th scope="col">Actions</th>
+</tr>
+</thead>
+<tbody>
+{% for item in listeGed %}
+<tr class="table">
+<th scope="row">{{ item.id }}</th>
+<td>{{ item.nom }}</td>
+<td>{{ item.typeId.type }}</td>
+<td><a href="/deleteGed/{{ item.id }}"><i class="fas fa-trash"></i></a></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}

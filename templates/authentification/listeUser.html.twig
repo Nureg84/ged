@@ -19,7 +19,7 @@
 <th scope="row">{{ item.nom }}</th>
 <td>{{ item.prenom }}</td>
 <td>{{ item.id }}</td>
-<td>RAS</td>
+<td><a href="/deleteUser/{{ item.id }}"><i class="fas fa-trash"></i></a></td>
 </tr>
 {% endfor %}
 </tbody>

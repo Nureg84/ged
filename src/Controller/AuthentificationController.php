@@ -59,8 +59,8 @@ class AuthentificationController extends AbstractController
 			$listeUsers = $manager->getRepository(Utilisateur::class)->findAll();
 			
 		return $this->render('authentification/listeUser.html.twig', [
-'controller_name' => "Liste des Utilisateurs",
-'listeUser' => $listeUsers,
+		'controller_name' => "Liste des Utilisateurs",
+		'listeUser' => $listeUsers,
 		]);
 	}
 	
@@ -104,5 +104,17 @@ class AuthentificationController extends AbstractController
 		return $this->render('authentification/dashboard.html.twig',[
 			'controller_name' => "Espace Client",
 		]);
+	}
+	
+	/**
+	* @Route("/deleteUser/{id}", name="deleteUser")
+	*/
+	public function deleteUser(Request $request, EntityManagerInterface $manager, Utilisateur $id): Response
+	{
+
+	$manager->remove($id);
+	$manager->flush();
+
+	return $this->redirectToRoute('listeUser');
 	}
 }
