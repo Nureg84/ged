@@ -16,10 +16,11 @@
 <tbody>
 {% for item in listeGed %}
 <tr class="table">
-<th scope="row">{{ item.id }}</th>
-<td>{{ item.nom }}</td>
-<td>{{ item.typeId.type }}</td>
-<td><a href="/deleteGed/{{ item.id }}"><i class="fas fa-trash"></i></a></td>
+<th scope="row">{{ item.documentId.id }}</th>
+<td>{{ item.documentId.nom }}</td>
+<td>{{ item.documentId.typeId.type }}</td>
+<td><a href="/deleteGed/{{ item.documentId.id }}"><i class="fas fa-trash"></i></a>
+<a href="/upload/{{ item.documentId.chemin }}" target="_blank"><i class="fas fa-file-download"></i></a></td>
 </tr>
 {% endfor %}
 </tbody>

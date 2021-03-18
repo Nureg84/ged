@@ -94,6 +94,19 @@ class AuthentificationController extends AbstractController
 			// 'controller_name' => "Ajout en base de données.",
 			// ]);
 		}
+
+		/**
+     * @Route("/logout", name="logout")
+     */
+		public function logout(Request $request, EntityManagerInterface $manager): Response
+		{
+		$sess = $request->getSession();
+		$sess->remove("idUtilisateur");
+		$sess->invalidate();
+		$sess->clear();
+		$sess=$request->getSession()->clear();
+		return $this->redirectToRoute('authentification');
+		}
 		
 		/**
      * @Route("/dashboard", name="dashboard")
