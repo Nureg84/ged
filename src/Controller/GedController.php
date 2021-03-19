@@ -98,14 +98,16 @@ class GedController extends AbstractController
      */
 	public function listeGed(Request $request, EntityManagerInterface $manager): Response
     {
-    $sess = $request->getSession();
-    if($sess->get("idUtilisateur")){
+        $sess = $request->getSession();
+        if($sess->get("idUtilisateur")){
         //Requête qui récupère la liste des Users
         $listeGed = $manager->getRepository(Acces::class)->findByUtilisateurId($sess->get("idUtilisateur"));
-
+        
         return $this->render('ged/listeGed.html.twig', [
         'controller_name' => "Liste des Documents",
         'listeGed' => $listeGed,
+        'listeUsers' => $manager->getRepository(Utilisateur::class)->findAll(),
+        'listeAutorisations' => $manager->getRepository(Autorisation::class)->findAll(),
         ]);
         }else{
         return $this->redirectToRoute('authentification');
@@ -119,7 +121,7 @@ class GedController extends AbstractController
     {
         $sess = $request->getSession();
         if($sess->get("idUtilisateur")){
-            //il faut supprimer le liend ans acces
+            //il faut supprimer le lien dans acces
             $recupListeAcces = $manager->getRepository(Acces::class)->findByDocumentId($id);
             foreach($recupListeAcces as $doc){
             $manager->remove($doc);
@@ -133,8 +135,32 @@ class GedController extends AbstractController
                 $manager->flush();
             }
             return $this->redirectToRoute('listeGed');
-            }else{
-            return $this->redirectToRoute('authentification');
-            }
+        }else{
+        return $this->redirectToRoute('authentification');
         }
+    }
+
+     /**
+     * @Route("partageGed", name="partageGed")
+     */
+    public function partageGed(Request $request, EntityManagerInterface $manager): Response
+    {
+    $sess = $request->getSession();
+    if($sess->get("idUtilisateur")){
+        //Requête le user en focntion du formulaire
+        $user = $manager->getRepository(Utilisateur::class)->findOneById($request->request->get('utilisateur'));
+        $autorisation = $manager->getRepository(Autorisation::class)->findOneById($request->request->get('autorisation'));
+        $document = $manager->getRepository(Document::class)->findOneById($request->request->get('doc'));
+        $acces = new Acces();
+        $acces->setUtilisateurId($user);
+        $acces->setAutorisationId($autorisation);
+        $acces->setDocumentId($document);
+        $manager->persist($acces);
+        $manager->flush();
+
+        return $this->redirectToRoute('listeGed');
+    }else{
+    return $this->redirectToRoute('authentification');
+    }
+    }
 }

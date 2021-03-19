@@ -8,6 +8,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Utilisateur;
+use App\Entity\Acces;
 
 class AuthentificationController extends AbstractController
 {
@@ -24,11 +25,16 @@ class AuthentificationController extends AbstractController
 	 /**
      * @Route("/insertUser", name="insertUser")
      */
-	public function insertUser(): Response
+	public function insertUser(Request $request): Response
 	{
-		return $this->render('authentification/insertUser.html.twig', [
-			'controller_name' => "Insertion d'un nouvel Utilisateur",
-		]);
+		$sess = $request->getSession();
+		if($sess->get("idUtilisateur")){
+			return $this->render('authentification/insertUser.html.twig', [
+				'controller_name' => "Insertion d'un nouvel Utilisateur",
+			]);
+		}else{
+			return $this->redirectToRoute('authentification');
+		}
 	}
 	
 	/**
@@ -36,18 +42,24 @@ class AuthentificationController extends AbstractController
      */
 	public function insertUserBdd(Request $request, EntityManagerInterface $manager): Response
 	{
+		$sess = $request->getSession();
+		if($sess->get("idUtilisateur")){
 			$User = new Utilisateur();
 			$User->setNom($request->request->get('nom'));
 			$User->setPrenom($request->request->get('prenom'));
 			$User->setCode($request->request->get('code'));
 			$User->setSalt($request->request->get('salt'));
-
+			
 			$manager->persist($User);
 			$manager->flush();
-			
-		return $this->render('authentification/insertUser.html.twig', [
-			'controller_name' => "Ajout en base de données.",
-		]);
+
+
+			return $this->render('authentification/insertUser.html.twig', [
+				'controller_name' => "Ajout en base de données.",
+			]);
+		}else{
+			return $this->redirectToRoute('authentification');
+		}
 	}
 	
 	/**
@@ -55,13 +67,18 @@ class AuthentificationController extends AbstractController
      */
 	public function listeUser(Request $request, EntityManagerInterface $manager): Response
 	{
-		//Requête qui récupère la liste des users
-			$listeUsers = $manager->getRepository(Utilisateur::class)->findAll();
-			
-		return $this->render('authentification/listeUser.html.twig', [
-		'controller_name' => "Liste des Utilisateurs",
-		'listeUser' => $listeUsers,
-		]);
+		$sess = $request->getSession();
+		if($sess->get("idUtilisateur")){
+			//Requête qui récupère la liste des Users
+			$listeUser = $manager->getRepository(Utilisateur::class)->findAll();
+
+			return $this->render('authentification/listeUser.html.twig', [
+				'controller_name' => "Liste des Utilisateurs",
+				'listeUser' => $listeUser,
+			]);
+		}else{
+			return $this->redirectToRoute('authentification');
+		}
 	}
 	
 	/**
@@ -114,9 +131,20 @@ class AuthentificationController extends AbstractController
 	public function dashboard(Request $request, EntityManagerInterface $manager): Response
 	{
 		$sess = $request->getSession();
+		if($sess->get("idUtilisateur")){
+		//Récupération du noombre de document
+		$listeDocuments = $manager->getRepository(Acces::class)->findByUtilisateurId($sess->get("idUtilisateur"));
+		$nbDocument = 0;
+		foreach($listeDocuments as $val){
+		$nbDocument++;
+		}
 		return $this->render('authentification/dashboard.html.twig',[
-			'controller_name' => "Espace Client",
+		'controller_name' => "Espace Client",
+		'nb_document' => $nbDocument
 		]);
+		}else{
+		return $this->redirectToRoute('authentification');
+		}
 	}
 	
 	/**
@@ -125,9 +153,13 @@ class AuthentificationController extends AbstractController
 	public function deleteUser(Request $request, EntityManagerInterface $manager, Utilisateur $id): Response
 	{
 
-	$manager->remove($id);
-	$manager->flush();
-
-	return $this->redirectToRoute('listeUser');
+		$sess = $request->getSession();
+		if($sess->get("idUtilisateur")){
+			$manager->remove($id);
+			$manager->flush();
+			return $this->redirectToRoute('listeUser');
+		}else{
+			return $this->redirectToRoute('authentification');
+		}
 	}
 }
