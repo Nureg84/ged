@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use App\Entity\Autorisation;
 use App\Entity\Utilisateur;
 use App\Entity\Acces;
 
@@ -130,21 +131,53 @@ class AuthentificationController extends AbstractController
      */
 	public function dashboard(Request $request, EntityManagerInterface $manager): Response
 	{
-		$sess = $request->getSession();
+		{
+			$sess = $request->getSession();
 		if($sess->get("idUtilisateur")){
-		//Récupération du noombre de document
-		$listeDocuments = $manager->getRepository(Acces::class)->findByUtilisateurId($sess->get("idUtilisateur"));
-		$nbDocument = 0;
-		foreach($listeDocuments as $val){
-		$nbDocument++;
-		}
-		return $this->render('authentification/dashboard.html.twig',[
-		'controller_name' => "Espace Client",
-		'nb_document' => $nbDocument
-		]);
+			//*******************Requetes Mysql*******************
+			//Récupération du nombre de document
+			$listeDocuments = $manager->getRepository(Acces::class)->findByUtilisateurId($sess->get("idUtilisateur"));
+			$listeDocumentAll = $manager->getRepository(Acces::class)->findAll(); 
+			$listeUsers = $manager->getRepository(Utilisateur::class)->findAll();
+			$listeAutorisations = $manager->getRepository(Autorisation::class)->findAll();
+			//*********************Variables*********************
+			$flag = 0 ; //indique que le document privé
+			$nbDocument = 0;
+			$nbDocumentPrives = 0;
+			$documentPrives = Array();
+			$lastDocument = new \Datetime("2000-01-01");
+			
+			foreach($listeDocuments as $val){
+				$nbDocument++;	
+				$document = $val->getDocumentId()->getId();
+				if($val->getDocumentId()->getCreatedAt() > $lastDocument){
+					$lastDocument = $val->getDocumentId()->getCreatedAt();
+					$documentDate = $val->getDocumentId();
+					
+				}
+				foreach($listeDocumentAll as $val2){
+					if($val2->getDocumentId()->getId() == $document && $val2->getUtilisateurId()->getId() != $sess->get("idUtilisateur") )
+						$flag++;	
+				}
+				if($flag == 0){
+					$documentPrives[] = $val ;
+					$nbDocumentPrives ++;
+				}
+				$flag =0;
+			}
+			return $this->render('authentification/dashboard.html.twig',[
+			 'controller_name' => "Espace Client",
+			 'nb_document' => $nbDocument,
+			 'listeDocumentPrives' => $documentPrives,
+			 'nbDocumentPrives' => $nbDocumentPrives,
+			 'listeUsers' => $listeUsers,
+			 'listeAutorisations' => $listeAutorisations,
+			 'documentDate' => $documentDate,
+			 ]);
 		}else{
-		return $this->redirectToRoute('authentification');
+			return $this->redirectToRoute('authentification');
 		}
+			}
 	}
 	
 	/**

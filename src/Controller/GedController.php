@@ -102,13 +102,13 @@ class GedController extends AbstractController
         if($sess->get("idUtilisateur")){
         //Requête qui récupère la liste des Users
         $listeGed = $manager->getRepository(Acces::class)->findByUtilisateurId($sess->get("idUtilisateur"));
-        
+
         return $this->render('ged/listeGed.html.twig', [
-        'controller_name' => "Liste des Documents",
-        'listeGed' => $listeGed,
-        'listeUsers' => $manager->getRepository(Utilisateur::class)->findAll(),
-        'listeAutorisations' => $manager->getRepository(Autorisation::class)->findAll(),
-        ]);
+            'controller_name' => "Liste des Documents",
+            'listeGed' => $listeGed,
+            'listeUsers' => $manager->getRepository(Utilisateur::class)->findAll(),
+            'listeAutorisations' => $manager->getRepository(Autorisation::class)->findAll(),
+            ]);
         }else{
         return $this->redirectToRoute('authentification');
         }
