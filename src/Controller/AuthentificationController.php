@@ -153,6 +153,7 @@ class AuthentificationController extends AbstractController
 				if($val->getDocumentId()->getCreatedAt() > $lastDocument){
 					$lastDocument = $val->getDocumentId()->getCreatedAt();
 					$documentDate = $val->getDocumentId();
+					$autorisationDocument = $val->getautorisationId();
 					
 				}
 				foreach($listeDocumentAll as $val2){
@@ -173,6 +174,8 @@ class AuthentificationController extends AbstractController
 			 'listeUsers' => $listeUsers,
 			 'listeAutorisations' => $listeAutorisations,
 			 'documentDate' => $documentDate,
+			 'listeGed' => $listeDocumentAll,
+			 'autorisation' => $autorisationDocument,
 			 ]);
 		}else{
 			return $this->redirectToRoute('authentification');

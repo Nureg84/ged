@@ -22,7 +22,8 @@
 <tr class="table">
 <th scope="row">{{ item.type }}</th>
 {#<td><a href="/deleteGenre/{{ item.id }}"><i class="fas fa-trash"></i></a></td>#}
-<td><a href="/deleteGenre/{{ item.id }}"><i class="fas fa-trash"></i></a></td>
+<td><a href="/deleteGenre/{{ item.id }}"><i class="fas fa-trash"></i></a>
+    <a href="/modifGenre/{{ item.id }}"><i class="fas fa-sync"></i></a></td>
 </tr>
 {% endfor %}
 </tbody>

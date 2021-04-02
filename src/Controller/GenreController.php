@@ -79,4 +79,39 @@ return $this->render('genre/insertGenre.html.twig', [
 
           return $this->redirectToRoute('listeGenre');
      }
+
+      /**
+     * @Route("/modifGenre/{id}", name="modifGenre")
+     */
+    public function modifGenre(Request $request, EntityManagerInterface $manager, Genre $id): Response
+    {
+     $sess = $request->getSession();
+     //Information de session
+     $sess->set("idGenre", $id);
+     
+     return $this->render('genre/modifGenre.html.twig', [
+          'controller_name' => "Modification d'un Genre",
+          'genre' => $id,
+     ]);
+        
+    }
+
+       /**
+     * @Route("/modifGenreBdd", name="modifGenreBdd")
+     */
+    public function modifGenreBdd(Request $request, EntityManagerInterface $manager): Response
+    {
+     $sess = $request->getSession();
+     if($sess->get("idUtilisateur")){
+     $genre = $manager->getRepository(Genre::class)->findOneById($sess->get("idGenre")->getId());
+     $genre->setType($request->request->get('nom'));
+     $manager->persist($genre);
+     $manager->flush();
+
+     return $this->redirectToRoute('listeGenre');
+
+     }else{
+     return $this->redirectToRoute('authentification');
+     }
+    }
 }
